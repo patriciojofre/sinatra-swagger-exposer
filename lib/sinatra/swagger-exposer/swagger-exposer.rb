@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'json'
 
+require_relative 'configuration/swagger-auth'
 require_relative 'configuration/swagger-endpoint'
 require_relative 'configuration/swagger-endpoint-parameter'
 require_relative 'configuration/swagger-endpoint-response'
@@ -44,6 +45,7 @@ module Sinatra
       app.get('/swagger_doc.json') do
         swagger_content = Sinatra::SwaggerExposer::SwaggerContentCreator.new(
           settings.respond_to?(:swagger_info) ? settings.swagger_info : nil,
+          settings.respond_to?(:swagger_auth) ? settings.swagger_auth : nil,
           settings.swagger_types,
           settings.swagger_endpoints
         ).to_swagger
@@ -137,6 +139,10 @@ module Sinatra
     # General information
     def general_info(params)
       set :swagger_info, Sinatra::SwaggerExposer::Configuration::SwaggerInfo.new(params)
+    end
+
+    def auth_info(params)
+      set :swagger_auth, Sinatra::SwaggerExposer::Configuration::SwaggerAuth.new(params)
     end
 
     # Declare a type

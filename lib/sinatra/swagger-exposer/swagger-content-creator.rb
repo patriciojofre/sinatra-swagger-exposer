@@ -5,8 +5,9 @@ module Sinatra
     # Create the swagger content
     class SwaggerContentCreator
 
-      def initialize(swagger_info, swagger_types, swagger_endpoints)
+      def initialize(swagger_info, swagger_auth, swagger_types, swagger_endpoints)
         @swagger_info = swagger_info
+        @swagger_auth = swagger_auth
         @swagger_types = swagger_types
         @swagger_endpoints = swagger_endpoints
       end
@@ -17,6 +18,11 @@ module Sinatra
           consumes: ['application/json'],
           produces: ['application/json'],
         }
+
+        if @swagger_auth
+          result.merge!(@swagger_auth.instance_variable_get(:@values))
+        end
+        
         if @swagger_info
           result[:info] = @swagger_info.to_swagger
         end
