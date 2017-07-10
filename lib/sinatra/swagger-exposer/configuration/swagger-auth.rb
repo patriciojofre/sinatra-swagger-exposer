@@ -19,8 +19,32 @@ module Sinatra
 
         # Known fields for the info field
         INFO_FIELDS = {
-          :securityDefinitions => {:basicAuth => { :type => String }},
-          :security => [{:basicAuth => Array}],   
+          :securityDefinitions => {
+            :basicAuth => { 
+              :type => String 
+            },
+            :apiKeyAuth => {
+              :type => String,
+              :in => String,
+              :name => String
+            },
+            :oAuth2 => {
+              :type => String,
+              :flow => String,
+              :authorizationUrl => String,
+              :tokenUrl => String,
+              :scopes => {
+                :read => String,
+                :write => String,
+                :admin => String,
+              }
+            }
+          },
+          :security => {
+            :basicAuth => Hash,
+            :apiKeyAuth => Hash,
+            :oAuth2 => Hash
+          }   
         }
 
         # Recursive function
@@ -42,13 +66,6 @@ module Sinatra
                   sub_params = process(current_value, current_field_name, field_content, top_level_hash)
                   if sub_params
                     result[key_sym] = sub_params
-                  end
-                elsif current_value.is_a? Array
-                  current_value.each do |value|
-                    sub_params = process(value, current_field_name, field_content, top_level_hash)
-                    if sub_params
-                      result[key_sym] = sub_params
-                    end
                   end
                 else
                   raise SwaggerInvalidException.new("Property [#{current_key}] value [#{current_value}] should be a Hash for #{current_field_name}: #{top_level_hash}")

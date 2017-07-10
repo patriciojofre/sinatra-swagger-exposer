@@ -20,7 +20,7 @@ module Sinatra
         }
 
         if @swagger_auth
-          result.merge!(@swagger_auth.instance_variable_get(:@values))
+          result.merge!(@swagger_auth.to_swagger)
         end
         
         if @swagger_info
