@@ -33,6 +33,9 @@ module Sinatra
       app.set :swagger_response_headers, response_headers
 
       app.set :swagger_processor_creator, Sinatra::SwaggerExposer::SwaggerProcessorCreator.new(swagger_types)
+
+      app.set :endpoint_extension, "json"
+
       declare_swagger_endpoint(app)
     end
 
@@ -174,6 +177,7 @@ module Sinatra
 
     # Override Sinatra route method
     def route(verb, path, options = {}, &block)
+      path = path.gsub("?:format?","json") if path.include?("?:format?")
       no_swagger = options[:no_swagger]
       options.delete(:no_swagger)
       if (verb == 'HEAD') || no_swagger
